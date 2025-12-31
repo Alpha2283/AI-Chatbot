@@ -1,0 +1,18 @@
+{
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next-build"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/"
+    }
+  ],
+  "env": {
+    "REACT_APP_OPENROUTER_API_KEY": "@openrouter_api_key",
+    "REACT_APP_GOOGLE_SHEETS_WEBHOOK": "@google_sheets_webhook"
+  }
+}
