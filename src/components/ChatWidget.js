@@ -44,16 +44,17 @@ const ChatWidget = () => {
   }, [messages]);
 
   const handleQuickReply = async (text) => {
-    setInputValue(text);
     await handleSendMessage(text, true);
   };
 
-  const handleSendMessage = async (text, isQuickReply = false) => {
-    if (!text.trim() && !isQuickReply) return;
+  const handleSendMessage = async (text = '', isQuickReply = false) => {
+    const messageText = text || inputValue;
+    
+    if (!messageText.trim() && !isQuickReply) return;
 
     const userMessage = {
       id: Date.now().toString(),
-      text: isQuickReply ? text : inputValue,
+      text: messageText,
       sender: 'user',
       timestamp: new Date()
     };
@@ -63,11 +64,11 @@ const ChatWidget = () => {
     setIsLoading(true);
 
     // Add to conversation history
-    const updatedHistory = [...conversationHistory, { role: 'user', content: text }];
+    const updatedHistory = [...conversationHistory, { role: 'user', content: messageText }];
     setConversationHistory(updatedHistory);
 
     // Check for specific intents
-    const intent = extractIntent(text);
+    const intent = extractIntent(messageText);
     
     if (intent === 'book_appointment') {
       setTimeout(() => {
@@ -87,7 +88,7 @@ const ChatWidget = () => {
 
     // Get AI response
     try {
-      const aiResponse = await sendMessageToAI(text, updatedHistory);
+      const aiResponse = await sendMessageToAI(messageText, updatedHistory);
       
       const botMessage = {
         id: (Date.now() + 1).toString(),
@@ -151,7 +152,7 @@ const ChatWidget = () => {
   const handleKeyPress = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      handleSendMessage();
+      handleSendMessage(inputValue);
     }
   };
 
@@ -250,7 +251,7 @@ const ChatWidget = () => {
                   disabled={isLoading}
                 />
                 <button 
-                  onClick={() => handleSendMessage()} 
+                  onClick={() => handleSendMessage(inputValue)}  // Fixed: Pass inputValue
                   disabled={isLoading || !inputValue.trim()}
                   className="send-button"
                 >
